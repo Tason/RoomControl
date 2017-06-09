@@ -1,0 +1,42 @@
+// Footer
+// -------------------------
+
+body {
+  background-color: $gray-darker;
+  color: $gray-lighter;
+}
+
+footer {
+  color: #fff;
+  background-color: $gray-darker;
+
+  a:hover {
+    color: #fff;
+  }
+}
+
+// Typography
+// -------------------------
+
+a {
+  transition: all .4s cubic-bezier(.24,.45,.46,.92);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.btn {
+  &.btn-inverse {
+    border: 1px solid $gray-lighter;
+    border-radius: 5px;
+  }
+}
+
+.bg-inverse {
+  background-color: $gray-darker !important;
+}
+
+.colorpicker.dropdown-menu {
+  background-color: $gray-darker;
+}

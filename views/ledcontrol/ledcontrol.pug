@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+    .row
+        .col-12
+            h1 LedControl
+            p.lead I hope you know what you're doing!
+            hr
+        //.col-12
+          //  #color-wheel.input-group.colorpicker-component
+
+        .col-12
+
+            each control in controls
+                a.btn.btn-inverse.btn-ajax(role='button', data-slug='/ledcontrol', data-id=control._id) #{control.controltext}
