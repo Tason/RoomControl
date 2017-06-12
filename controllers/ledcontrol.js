@@ -3,6 +3,7 @@
  */
 const Ledcontrol = require('../models/ledcontrol');
 const serialport = require('../controllers/serial_c');
+const EventEmitter = require('events');
 
 
 module.exports.postcreatecontrol = (req, res, next) => {
@@ -52,21 +53,35 @@ module.exports.getAllControls = (req, res, next) => {
   });
 };
 
+
+const myEmitter = new EventEmitter();
+
 module.exports.postControl = (req, res, next) => {
   const id = req.body.id;
+  const sp = req.app.locals.sp;
   Ledcontrol.getControlPackets(id, (packets) => {
-    if (req.app.locals.sp.isOpen()) {
+    if (sp.isOpen()) {
       for (let i = 0; packets.length > i; i++) {
+        console.log(`===Packet: ${i}`);
         const packet = packets[i];
-        const waitString = packet[1];
+        let waitString = packet[1];
         const buffer = Buffer.from(packet[0], 'hex');
+        console.log(`Packet: ${packet[0]}`);
         if (waitString) {
-          req.app.locals.sp.on('data', (data) => serialport.waitForString(data, serialport.sendBuffer(buffer, next)));
-          req.app.locals.sp.removeListener('data', serialport.waitForString);
+          console.log(`Waiting for: ${waitString}`);
+          sp.on('data', data => serialport.waitForString(
+              data, waitString, err => serialport.sendBuffer(
+                  err, buffer, () => {
+                    console.log('Removing wait for');
+                    sp.removeListener('data', serialport.waitForString);
+                    waitString = undefined;
+                  }
+                  )
+          ));
         } else {
-          serialport.sendBuffer(buffer, next);
+          console.log('Sending Buffer without Wait');
+          serialport.sendBuffer(null, buffer, next);
         }
-        console.log(packet);
       }
     }
   });

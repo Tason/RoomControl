@@ -13,18 +13,22 @@ const SerialPort = new serialport('COM3', {
 
 module.exports.serialPort = SerialPort;
 
-module.exports.sendBuffer = (buffer, next) => {
+module.exports.sendBuffer = (err, buffer, next) => {
+  if (err) { return next(err); }
+  console.log('Sending Buffer');
   SerialPort.write(buffer, (err) => {
     if (err) {
       console.log(`Error while sending message : ${err}`);
       return next(err);
     }
+    return next();
   });
-  return next();
 };
 
 module.exports.waitForString = (data, waitString, next) => {
+  // console.log(`Wait Data: ${data}`);
   if (data.includes(waitString)) {
+    console.log(`Found: ${waitString}`);
     return next();
   }
 };
